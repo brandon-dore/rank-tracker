@@ -40,6 +40,6 @@ This script is designed for initializing the PostgreSQL database for the Rank Tr
 - Review and secure the script and credentials appropriately, especially in a production environment.
 - Make sure to have the necessary SQL scripts (`create_tables.sql` and `populate_data.sql`) available in the correct paths.
 
-## Contributors
+## License
 
-- Brandon Dore
+This project is licensed under the [MIT License](https://opensource.org/license/mit/).

@@ -2,6 +2,14 @@
 
 Welcome to the Rank Tracker Web App repository! This web application allows users to track their daily rank in a variety of video games. You can compare your rank over time, see how you stack up against friends, and even compete globally. Each game has its own stylized page for a truly immersive rank tracking experience.
 
+## Table of Contents
+
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+- [Features](#features)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## Technologies Used
 
 - **Frontend:**
