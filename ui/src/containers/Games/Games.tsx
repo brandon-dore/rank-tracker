@@ -1,19 +1,19 @@
-import { useState } from "react"
-import { useGames } from "./Games.logic"
-import { Game } from "../../types/types"
+import { useState } from "react";
+import { useGames } from "./Games.logic";
+import { Game } from "../../types/types";
 
-import "./Games.css"
+import "./Games.css";
 
 export const Games = () => {
-  const { getGames, loading } = useGames()
-  const [games, setGames] = useState<Game[]>()
-  const [id, setId] = useState<string | undefined>()
+  const { getGames, loading } = useGames();
+  const [games, setGames] = useState<Game[]>();
+  const [id, setId] = useState<string | undefined>();
 
   const handleGetGames = (id?: string) => {
     getGames(id).then((response) => {
-      setGames(response)
-    })
-  }
+      setGames(response);
+    });
+  };
 
   return (
     <div className="pageContainer">
@@ -41,5 +41,5 @@ export const Games = () => {
         <p>Game not found</p>
       )}
     </div>
-  )
-}
+  );
+};
