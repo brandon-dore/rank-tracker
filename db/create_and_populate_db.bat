@@ -4,7 +4,7 @@ rem PostgreSQL database connection parameters
 set DB_USER=postgres
 set DB_HOST=localhost
 set DB_NAME=rank_tracker_db
-set PGPASSWORD=3391
+set PGPASSWORD=password
 set DB_PORT=5432
 
 rem Path to the SQL scripts

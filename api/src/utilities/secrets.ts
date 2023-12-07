@@ -12,7 +12,7 @@ export const JWT_SECRET     = _.defaultTo(process.env.JWT_SECRET, "secret");
 export const SESSION_SECRET = _.defaultTo(process.env.SESSION_SECRET, "secret");
 export const DB             = {
   USER    : _.defaultTo(process.env.DB_USER, "postgres"),
-  PASSWORD: _.defaultTo(process.env.DB_USER_PWD, "3391"),
+  PASSWORD: _.defaultTo(process.env.DB_USER_PWD, "password"),
   HOST    : _.defaultTo(process.env.DB_HOST, "localhost"),
   NAME    : _.defaultTo(process.env.DB_NAME, "rank_tracker_db"),
   PORT    : _.defaultTo(parseInt(process.env.DB_PORT), 5432),

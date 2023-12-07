@@ -4,7 +4,7 @@
 DB_USER=postgres
 DB_HOST=localhost
 DB_NAME=rank_tracker_db
-PGPASSWORD=3391
+PGPASSWORD=password
 DB_PORT=5432
 
 # Path to the SQL scripts

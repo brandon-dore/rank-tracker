@@ -1,8 +1,7 @@
-import "./App.css"
-
-import { BrowserRouter } from "react-router-dom"
-import { RankTrackerRouter } from "./router"
-import { PageContainer } from "./components/PageContainer/PageContainer"
+import { BrowserRouter } from "react-router-dom";
+import "./App.css";
+import { PageContainer } from "./components/PageContainer/PageContainer";
+import { RankTrackerRouter } from "./router";
 
 function App() {
   return (
@@ -11,7 +10,7 @@ function App() {
         <RankTrackerRouter />
       </PageContainer>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

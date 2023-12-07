@@ -14,7 +14,7 @@ Welcome to the Rank Tracker Web App repository! This web application allows user
 
 - **Frontend:**
 
-  - Built with React and Redux
+  - Built with React and Vite
   - Developed using Vite for fast and efficient development
 
 - **Backend:**
@@ -57,7 +57,7 @@ Welcome to the Rank Tracker Web App repository! This web application allows user
    ```bash
    # Run frontend
    cd ../ui
-   npm start
+   npm run dev
 
    # Run backend
    cd ../api
