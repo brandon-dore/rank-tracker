@@ -1,10 +1,18 @@
 # Rank Tracker Web App Database Initialization Script
 
-## Overview
-
 This script is designed for initializing the PostgreSQL database for the Rank Tracker web application. It creates necessary roles, a database, and executes SQL scripts to set up tables and populate initial data.
 
-## Prerequisites
+## Table of Contents
+
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+- [Usage](#usage)
+- [Notes](#notes)
+- [License](#license)
+
+## Getting Started
+
+### Prerequisites
 
 - [PostgreSQL](https://www.postgresql.org/download/)
 - Ensure `psql` is added to PATH / Can be accessed globally
