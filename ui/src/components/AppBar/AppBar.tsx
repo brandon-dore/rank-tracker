@@ -1,9 +1,8 @@
-import React from "react";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import "./styles.css";
 import { Link } from "react-router-dom";
+import "./styles.css";
 
-export const AppBar: React.FC = () => {
+export const AppBar = () => {
   return (
     <NavigationMenu.Root className="NavigationMenuRoot">
       <NavigationMenu.List className="NavigationMenuList">
@@ -24,15 +23,7 @@ export const AppBar: React.FC = () => {
             <Link to="/users">Users</Link>
           </NavigationMenu.Link>
         </NavigationMenu.Item>
-
-        <NavigationMenu.Indicator className="NavigationMenuIndicator">
-          <div className="Arrow" />
-        </NavigationMenu.Indicator>
       </NavigationMenu.List>
-
-      <div className="ViewportPosition">
-        <NavigationMenu.Viewport className="NavigationMenuViewport" />
-      </div>
     </NavigationMenu.Root>
   );
 };

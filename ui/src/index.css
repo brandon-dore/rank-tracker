@@ -30,9 +30,6 @@ body {
   width: 100vw;
   height: 100vh;
   display: flex;
-  align-items: flex-start;
-  place-items: center;
-  justify-content: center;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
