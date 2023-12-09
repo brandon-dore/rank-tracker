@@ -54,8 +54,6 @@ const getAverageRank = async (ranks: Rank[]) => {
 router.get("/", async (req: Request, res: Response) => {
   try {
     const result = await pool.query("SELECT * FROM user_ranks");
-    console.log(result);
-
     res.json(result.rows);
   } catch (error) {
     logger.error(error);
