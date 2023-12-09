@@ -65,6 +65,48 @@ router.get("/", async (req: Request, res: Response) => {
 
 /**
  * @swagger
+ * /ranks/user:
+ *   get:
+ *     summary: Get all ranks of a user on a game
+ *     tags: [Ranks]
+ *     description: Retrieve all ranks for a specific user on a specific game from the database.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         description: ID of the user to retrieve ranks for
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: gameId
+ *         required: true
+ *         description: ID of the game to retrieve ranks for
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       500:
+ *         description: Internal Server Error
+ */
+
+router.get("/user", async (req: Request, res: Response) => {
+  const { userId, gameId } = req.query;
+
+  try {
+    const result = await pool.query(
+      "SELECT * FROM user_ranks WHERE user_id = $1 AND game_id = $2",
+      [userId, gameId]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+/**
+ * @swagger
  * /ranks/user/{userId}:
  *   get:
  *     summary: Get rank by user id
@@ -100,62 +142,19 @@ router.get("/user/:userId", async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /ranks/user/{userId}/{gameId}:
- *   get:
- *     summary: Get all ranks of a user on a game
- *     tags: [Ranks]
- *     description: Retrieve all ranks for a specific user on a specific game from the database.
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         description: ID of the user to retrieve ranks for
- *         schema:
- *           type: integer
- *       - in: path
- *         name: gameId
- *         required: true
- *         description: ID of the game to retrieve ranks for
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Successful response
- *       500:
- *         description: Internal Server Error
- */
-
-// TOOD: Improve intake of paramters below
-router.get("/user/:userId/:gameId", async (req: Request, res: Response) => {
-  const { userId, gameId } = req.params;
-
-  try {
-    const result = await pool.query(
-      "SELECT * FROM user_ranks WHERE user_id = $1 AND game_id = $2",
-      [userId, gameId]
-    );
-    res.json(result.rows);
-  } catch (error) {
-    logger.error(error);
-    res.status(500).send("Internal Server Error");
-  }
-});
-
-/**
- * @swagger
- * /ranks/user/{userId}/{gameId}/average:
+ * /ranks/average:
  *   get:
  *     summary: Get an average of the ranks of a user on a game
  *     tags: [Ranks]
  *     description: Retrieve the average rank of a user on a specific game from the database.
  *     parameters:
- *       - in: path
+ *       - in: query
  *         name: userId
  *         required: true
  *         description: ID of the user to retrieve ranks for
  *         schema:
  *           type: integer
- *       - in: path
+ *       - in: query
  *         name: gameId
  *         required: true
  *         description: ID of the game to retrieve ranks for
@@ -169,24 +168,78 @@ router.get("/user/:userId/:gameId", async (req: Request, res: Response) => {
  */
 
 // TODO: Add a since/until parameter. Improve the intake of parameters below
-router.get(
-  "/user/:userId/:gameId/average",
-  async (req: Request, res: Response) => {
-    const { userId, gameId } = req.params;
+router.get("/average", async (req: Request, res: Response) => {
+  const { userId, gameId } = req.query;
 
-    try {
-      const result = await pool.query(
-        "SELECT * FROM user_ranks WHERE user_id = $1 AND game_id = $2",
-        [userId, gameId]
-      );
+  try {
+    const result = await pool.query(
+      "SELECT * FROM user_ranks WHERE user_id = $1 AND game_id = $2",
+      [userId, gameId]
+    );
 
-      const ranks = result.rows;
-      res.json(await getAverageRank(ranks));
-    } catch (error) {
-      logger.error(error);
-      res.status(500).send("Internal Server Error");
-    }
+    const ranks = result.rows;
+    res.json(await getAverageRank(ranks));
+  } catch (error) {
+    logger.error(error);
+    res.status(500).send("Internal Server Error");
   }
-);
+});
+
+/**
+ * @swagger
+ * /ranks/connections:
+ *   get:
+ *     summary: Get all ranks of a user and their connections on a game
+ *     tags: [Ranks]
+ *     description: Retrieve all ranks of a user and their connections on a specific game from the database.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         description: ID of the user to retrieve ranks for
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: gameId
+ *         required: true
+ *         description: ID of the game to retrieve ranks for
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Successful response
+ *       500:
+ *         description: Internal Server Error
+ */
+
+// TODO: Add a since/until parameter.
+router.get("/connections", async (req: Request, res: Response) => {
+  const { userId, gameId } = req.query;
+
+  try {
+    const userConnections = await pool.query(
+      "SELECT user1_id, user2_id FROM user_connections WHERE user1_id = $1 OR user2_id = $1",
+      [userId]
+    );
+    let connectionIds = userConnections.rows.map((connection) => [
+      connection.user1_id,
+      connection.user2_id,
+    ]);
+
+    connectionIds = [...new Set(connectionIds.flat())];
+
+    const result = await pool.query(
+      `SELECT * FROM user_ranks WHERE user_id IN (${connectionIds.join(
+        ","
+      )}) AND game_id = $1`,
+      [gameId]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    logger.error(error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 export default router;
