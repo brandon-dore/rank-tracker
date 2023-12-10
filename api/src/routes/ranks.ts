@@ -10,6 +10,7 @@ import logger from "../utilities/logger";
 import pool from "../database/index";
 import { Rank } from "../utilities/types";
 import { indexOf } from "lodash";
+import { paginationIsValid } from "../utilities/validation";
 
 const router = express.Router();
 
@@ -89,9 +90,9 @@ router.get("/", async (req: Request, res: Response) => {
  */
 
 router.get("/user", async (req: Request, res: Response) => {
-  const { userId, gameId } = req.query;
-
   try {
+    const { userId, gameId } = req.query;
+
     const result = await pool.query(
       "SELECT * FROM user_ranks WHERE user_id = $1 AND game_id = $2",
       [userId, gameId]
@@ -117,6 +118,18 @@ router.get("/user", async (req: Request, res: Response) => {
  *         description: ID of the user to retrieve ranks for
  *         schema:
  *           type: integer
+ *       - in: query
+ *         name: page
+ *         description: Page number for pagination
+ *         schema:
+ *           type: integer
+ *         default: 1
+ *       - in: query
+ *         name: pageSize
+ *         description: Number of logs per page
+ *         schema:
+ *           type: integer
+ *         default: 10
  *     responses:
  *       200:
  *         description: Successful response
@@ -125,11 +138,21 @@ router.get("/user", async (req: Request, res: Response) => {
  */
 
 router.get("/user/:userId", async (req: Request, res: Response) => {
-  const { userId } = req.params;
   try {
+    const { userId } = req.params;
+    const { page = 1, pageSize = 10 } = req.query;
+
+    if (!paginationIsValid(page as number, pageSize as number)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid page or pageSize parameters" });
+    }
+
+    // Calculate the offset for pagination
+    const offset = (Number(page) - 1) * Number(pageSize);
     const result = await pool.query(
-      "SELECT * FROM user_ranks WHERE user_id = $1",
-      [userId]
+      "SELECT * FROM user_ranks WHERE user_id = $1 ORDER BY rank_date DESC LIMIT $2 OFFSET $3",
+      [userId, Number(pageSize), offset]
     );
     res.json(result.rows);
   } catch (error) {
@@ -165,11 +188,11 @@ router.get("/user/:userId", async (req: Request, res: Response) => {
  *         description: Internal Server Error
  */
 
-// TODO: Add a since/until parameter. Improve the intake of parameters below
+// TODO: Add a since/until parameter.
 router.get("/average", async (req: Request, res: Response) => {
-  const { userId, gameId } = req.query;
-
   try {
+    const { userId, gameId } = req.query;
+
     const result = await pool.query(
       "SELECT * FROM user_ranks WHERE user_id = $1 AND game_id = $2",
       [userId, gameId]
@@ -203,6 +226,18 @@ router.get("/average", async (req: Request, res: Response) => {
  *         description: ID of the game to retrieve ranks for
  *         schema:
  *           type: integer
+ *       - in: query
+ *         name: page
+ *         description: Page number for pagination
+ *         schema:
+ *           type: integer
+ *         default: 1
+ *       - in: query
+ *         name: pageSize
+ *         description: Number of logs per page
+ *         schema:
+ *           type: integer
+ *         default: 10
  *     responses:
  *       200:
  *         description: Successful response
@@ -212,9 +247,18 @@ router.get("/average", async (req: Request, res: Response) => {
 
 // TODO: Add a since/until parameter.
 router.get("/connections", async (req: Request, res: Response) => {
-  const { userId, gameId } = req.query;
-
   try {
+    const { userId, gameId, page = 1, pageSize = 10 } = req.query;
+
+    if (!paginationIsValid(page as number, pageSize as number)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid page or pageSize parameters" });
+    }
+
+    // Calculate the offset for pagination
+    const offset = (Number(page) - 1) * Number(pageSize);
+
     const userConnections = await pool.query(
       "SELECT user1_id, user2_id FROM user_connections WHERE user1_id = $1 OR user2_id = $1",
       [userId]
@@ -229,8 +273,8 @@ router.get("/connections", async (req: Request, res: Response) => {
     const result = await pool.query(
       `SELECT * FROM user_ranks WHERE user_id IN (${connectionIds.join(
         ","
-      )}) AND game_id = $1`,
-      [gameId]
+      )}) AND game_id = $1 ORDER BY rank_date DESC LIMIT $2 OFFSET $3`,
+      [gameId, Number(pageSize), offset]
     );
 
     res.json(result.rows);
