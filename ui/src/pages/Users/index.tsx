@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useUsers } from "./Users.logic";
+import { useUsers } from "./useUsers";
 import { User } from "../../types/types";
 
 import "./Users.css";

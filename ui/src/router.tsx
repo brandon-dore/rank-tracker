@@ -1,7 +1,7 @@
 import { Route, Routes } from "react-router-dom";
-import { Home } from "./containers/Home/Home";
-import { Games } from "./containers/Games/Games";
-import { Users } from "./containers/Users/Users";
+import { Home } from "./pages/Home";
+import { Games } from "./pages/Games";
+import { Users } from "./pages/Users";
 
 export const RankTrackerRouter = () => {
   return (

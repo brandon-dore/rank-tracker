@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGames } from "./Games.logic";
+import { useGames } from "./useGames";
 import { Game } from "../../types/types";
 
 import "./Games.css";

@@ -1,5 +1,5 @@
 import { BrowserRouter } from "react-router-dom";
-import { PageContainer } from "./components/PageContainer/PageContainer";
+import { PageContainer } from "./layouts/PageContainer";
 import { RankTrackerRouter } from "./router";
 
 function App() {
