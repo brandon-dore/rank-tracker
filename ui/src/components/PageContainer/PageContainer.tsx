@@ -1,5 +1,5 @@
-import { PropsWithChildren } from "react"
-import { AppBar } from "../AppBar/AppBar"
+import { PropsWithChildren } from "react";
+import { AppBar } from "../AppBar/AppBar";
 
 export const PageContainer = (props: PropsWithChildren) => {
   return (
@@ -7,5 +7,5 @@ export const PageContainer = (props: PropsWithChildren) => {
       <AppBar />
       {props.children}
     </div>
-  )
-}
+  );
+};
