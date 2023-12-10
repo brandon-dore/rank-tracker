@@ -1,19 +1,19 @@
-import { useState } from "react"
-import { useUsers } from "./Users.logic"
-import { User } from "../../types/types"
+import { useState } from "react";
+import { useUsers } from "./Users.logic";
+import { User } from "../../types/types";
 
-import "./Users.css"
+import "./Users.css";
 
 export const Users = () => {
-  const { getUsers, loading } = useUsers()
-  const [users, setUsers] = useState<User[]>()
-  const [id, setId] = useState<string | undefined>()
+  const { getUsers, loading } = useUsers();
+  const [users, setUsers] = useState<User[]>();
+  const [id, setId] = useState<string | undefined>();
 
   const handleGetUsers = (id?: string) => {
     getUsers(id).then((response) => {
-      setUsers(response)
-    })
-  }
+      setUsers(response);
+    });
+  };
 
   return (
     <div className="pageContainer">
@@ -41,5 +41,5 @@ export const Users = () => {
         <p>User not found</p>
       )}
     </div>
-  )
-}
+  );
+};

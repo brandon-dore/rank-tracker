@@ -5,10 +5,10 @@
  *   description: User management
  */
 
-import express, { Request, Response } from 'express';
-import logger from '../utilities/logger';
-import bcrypt from 'bcrypt';
-import pool from '../database/index';
+import express, { Request, Response } from "express";
+import logger from "../utilities/logger";
+import bcrypt from "bcrypt";
+import pool from "../database/index";
 
 const router = express.Router();
 
@@ -25,13 +25,13 @@ const router = express.Router();
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
-    const result = await pool.query('SELECT * FROM users');
+    const result = await pool.query("SELECT * FROM users");
     res.json(result.rows);
   } catch (error) {
     logger.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -55,14 +55,16 @@ router.get('/', async (req: Request, res: Response) => {
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id', async (req: Request, res: Response) => {
+router.get("/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [id]);
+    const result = await pool.query("SELECT * FROM users WHERE user_id = $1", [
+      id,
+    ]);
     res.json(result.rows[0]);
   } catch (error) {
     logger.error(error);
-    res.status(500).send('Internal Server Error');
+    res.status(500).send("Internal Server Error");
   }
 });
 
@@ -96,14 +98,19 @@ router.get('/:id', async (req: Request, res: Response) => {
  *       500:
  *         description: Internal Server Error
  */
-router.post('/signup', async (req: Request, res: Response) => {
+router.post("/signup", async (req: Request, res: Response) => {
   try {
     const { username, password, full_name, email } = req.body;
 
     // Check if the username or email is already in use
-    const existingUser = await pool.query('SELECT * FROM users WHERE username = $1 OR email = $2', [username, email]);
+    const existingUser = await pool.query(
+      "SELECT * FROM users WHERE username = $1 OR email = $2",
+      [username, email]
+    );
     if (existingUser.rows.length > 0) {
-      return res.status(400).json({ error: 'Username or email already in use' });
+      return res
+        .status(400)
+        .json({ error: "Username or email already in use" });
     }
 
     // Hash the password before storing it in the database
@@ -112,14 +119,14 @@ router.post('/signup', async (req: Request, res: Response) => {
 
     // Insert the new user into the database
     const newUser = await pool.query(
-      'INSERT INTO users (username, password_hash, full_name, email) VALUES ($1, $2, $3, $4) RETURNING *',
+      "INSERT INTO users (username, password_hash, full_name, email) VALUES ($1, $2, $3, $4) RETURNING *",
       [username, passwordHash, full_name, email]
     );
 
     res.status(201).json(newUser.rows[0]);
   } catch (error) {
-    logger.error('Error during signup:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    logger.error("Error during signup:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -150,16 +157,19 @@ router.post('/signup', async (req: Request, res: Response) => {
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:user_id/connections', async (req: Request, res: Response) => {
+router.get("/:user_id/connections", async (req: Request, res: Response) => {
   try {
     const userId = req.params.user_id;
     const { searchQuery } = req.query;
 
     // Check if the user exists
-    const userExists = await pool.query('SELECT * FROM users WHERE user_id = $1', [userId]);
+    const userExists = await pool.query(
+      "SELECT * FROM users WHERE user_id = $1",
+      [userId]
+    );
 
     if (userExists.rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Search for potential connections based on the search query
@@ -179,8 +189,8 @@ router.get('/:user_id/connections', async (req: Request, res: Response) => {
 
     res.json(potentialConnections.rows);
   } catch (error) {
-    logger.error('Error searching for connections:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    logger.error("Error searching for connections:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -214,41 +224,50 @@ router.get('/:user_id/connections', async (req: Request, res: Response) => {
  *       500:
  *         description: Internal Server Error
  */
-router.delete('/:user_id/connections/:friend_id', async (req: Request, res: Response) => {
-  try {
-    const userId = req.params.user_id;
-    const friendId = req.params.friend_id;
+router.delete(
+  "/:user_id/connections/:friend_id",
+  async (req: Request, res: Response) => {
+    try {
+      const userId = req.params.user_id;
+      const friendId = req.params.friend_id;
 
-    // Check if the users exist
-    const userExists = await pool.query('SELECT * FROM users WHERE user_id = $1', [userId]);
-    const friendExists = await pool.query('SELECT * FROM users WHERE user_id = $1', [friendId]);
+      // Check if the users exist
+      const userExists = await pool.query(
+        "SELECT * FROM users WHERE user_id = $1",
+        [userId]
+      );
+      const friendExists = await pool.query(
+        "SELECT * FROM users WHERE user_id = $1",
+        [friendId]
+      );
 
-    if (userExists.rows.length === 0 || friendExists.rows.length === 0) {
-      return res.status(404).json({ error: 'User or friend not found' });
+      if (userExists.rows.length === 0 || friendExists.rows.length === 0) {
+        return res.status(404).json({ error: "User or friend not found" });
+      }
+
+      // Check if the users are friends
+      const existingConnection = await pool.query(
+        "SELECT * FROM user_connections WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)",
+        [userId, friendId]
+      );
+
+      if (existingConnection.rows.length === 0) {
+        return res.status(400).json({ error: "Users are not friends" });
+      }
+
+      // Remove the friend connection
+      await pool.query(
+        "DELETE FROM user_connections WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)",
+        [userId, friendId]
+      );
+
+      res.status(200).json({ message: "Friend removed successfully" });
+    } catch (error) {
+      logger.error("Error removing friend:", error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-
-    // Check if the users are friends
-    const existingConnection = await pool.query(
-      'SELECT * FROM user_connections WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)',
-      [userId, friendId]
-    );
-
-    if (existingConnection.rows.length === 0) {
-      return res.status(400).json({ error: 'Users are not friends' });
-    }
-
-    // Remove the friend connection
-    await pool.query(
-      'DELETE FROM user_connections WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)',
-      [userId, friendId]
-    );
-
-    res.status(200).json({ message: 'Friend removed successfully' });
-  } catch (error) {
-    logger.error('Error removing friend:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
   }
-});
+);
 
 /**
  * @swagger
@@ -291,42 +310,52 @@ router.delete('/:user_id/connections/:friend_id', async (req: Request, res: Resp
  *       500:
  *         description: Internal Server Error
  */
-router.post('/:user_id/games/:game_id', async (req: Request, res: Response) => {
+router.post("/:user_id/games/:game_id", async (req: Request, res: Response) => {
   try {
     const userId = req.params.user_id;
     const gameId = req.params.game_id;
     const { text_rank, numeric_rank } = req.body;
 
     // Check if the user and game exist
-    const userExists = await pool.query('SELECT * FROM users WHERE user_id = $1', [userId]);
-    const gameExists = await pool.query('SELECT * FROM games WHERE game_id = $1', [gameId]);
+    const userExists = await pool.query(
+      "SELECT * FROM users WHERE user_id = $1",
+      [userId]
+    );
+    const gameExists = await pool.query(
+      "SELECT * FROM games WHERE game_id = $1",
+      [gameId]
+    );
 
     if (userExists.rows.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     } else if (gameExists.rows.length === 0) {
-      return res.status(404).json({ error: 'Game not found' });
+      return res.status(404).json({ error: "Game not found" });
     }
 
     // Check if the user already has a rank for today and the specified game
     const existingRank = await pool.query(
-      'SELECT * FROM user_ranks WHERE user_id = $1 AND game_id = $2 AND rank_date = CURRENT_DATE',
+      "SELECT * FROM user_ranks WHERE user_id = $1 AND game_id = $2 AND rank_date = CURRENT_DATE",
       [userId, gameId]
     );
 
     if (existingRank.rows.length > 0) {
-      return res.status(400).json({ error: 'User already has a rank for today and the specified game' });
+      return res
+        .status(400)
+        .json({
+          error: "User already has a rank for today and the specified game",
+        });
     }
 
     // Insert the user's rank for today and the specified game
     const newRank = await pool.query(
-      'INSERT INTO user_ranks (user_id, game_id, text_rank, numeric_rank, rank_date) VALUES ($1, $2, $3, $4, CURRENT_DATE) RETURNING *',
+      "INSERT INTO user_ranks (user_id, game_id, text_rank, numeric_rank, rank_date) VALUES ($1, $2, $3, $4, CURRENT_DATE) RETURNING *",
       [userId, gameId, text_rank || null, numeric_rank || null]
     );
 
     res.status(201).json(newRank.rows[0]);
   } catch (error) {
-    logger.error('Error adding user rank:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    logger.error("Error adding user rank:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

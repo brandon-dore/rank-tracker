@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Pool } from "pg";
 import { DB } from "../utilities/secrets";
 
 const pool = new Pool({
