@@ -1,6 +1,6 @@
 import app from "./app";
-import { APP_PORT } from "./utilities/secrets";
-import logger from "./utilities/logger";
+import { APP_PORT } from "./utils/secrets";
+import logger from "./utils/logger";
 
 app
   .listen(APP_PORT, () => {

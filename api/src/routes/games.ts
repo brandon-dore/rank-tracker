@@ -6,7 +6,7 @@
  */
 
 import express, { Request, Response } from "express";
-import logger from "../utilities/logger";
+import logger from "../utils/logger";
 import pool from "../database/index";
 
 const router = express.Router();
@@ -118,11 +118,9 @@ router.post("/", async (req: Request, res: Response) => {
       (rank_range_low !== undefined || rank_range_high !== undefined) &&
       rank_types !== undefined
     ) {
-      return res
-        .status(400)
-        .json({
-          error: "Either rank_range or rank_types should be defined, not both",
-        });
+      return res.status(400).json({
+        error: "Either rank_range or rank_types should be defined, not both",
+      });
     }
 
     // Check if the game already exists

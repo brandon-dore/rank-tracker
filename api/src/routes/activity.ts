@@ -6,9 +6,9 @@
  */
 
 import express, { Request, Response } from "express";
-import logger from "../utilities/logger";
+import logger from "../utils/logger";
 import pool from "../database/index";
-import { paginationIsValid } from "../utilities/validation";
+import { paginationIsValid } from "../utils";
 
 const router = express.Router();
 

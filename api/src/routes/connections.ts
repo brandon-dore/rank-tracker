@@ -6,7 +6,7 @@
  */
 
 import express, { Request, Response } from "express";
-import logger from "../utilities/logger";
+import logger from "../utils/logger";
 import pool from "../database/index";
 
 const router = express.Router();
