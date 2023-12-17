@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { DB } from "../utilities/secrets";
+import { DB } from "../utils/secrets";
 
 const pool = new Pool({
   user: DB.USER,

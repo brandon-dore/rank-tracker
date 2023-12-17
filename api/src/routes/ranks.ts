@@ -1,8 +1,8 @@
 /**
  * @swagger
  * tags:
- *   name: Connections
- *   description: Connection request management
+ *   name: Ranks
+ *   description: Rank Management
  */
 
 import express, { Request, Response } from "express";
@@ -13,11 +13,11 @@ const router = express.Router();
 
 /**
  * @swagger
- * /connections:
+ * /ranks:
  *   get:
- *     summary: Get a list of all connection requests
- *     tags: [Connections]
- *     description: Retrieve a list of all connection requests from the database.
+ *     summary: Get all ranks
+ *     tags: [Ranks]
+ *     description: Retrieve all ranks of all users from the database.
  *     responses:
  *       200:
  *         description: Successful response
@@ -26,7 +26,7 @@ const router = express.Router();
  */
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const result = await pool.query("SELECT * FROM connection_requests");
+    const result = await pool.query("SELECT * FROM user_ranks");
     res.json(result.rows);
   } catch (error) {
     logger.error(error);
@@ -36,16 +36,16 @@ router.get("/", async (req: Request, res: Response) => {
 
 /**
  * @swagger
- * /connections/{id}:
+ * /ranks/{rankId}:
  *   get:
- *     summary: Get connection request by ID
- *     tags: [Connections]
- *     description: Retrieve a connection request by its ID from the database.
+ *     summary: Get one rank
+ *     tags: [Ranks]
+ *     description: Retrieve one rank by id from the database.
  *     parameters:
  *       - in: path
- *         name: id
+ *         name: rankId
  *         required: true
- *         description: ID of the connection request to retrieve
+ *         description: ID of the rank
  *         schema:
  *           type: integer
  *     responses:
@@ -54,14 +54,14 @@ router.get("/", async (req: Request, res: Response) => {
  *       500:
  *         description: Internal Server Error
  */
-router.get("/:id", async (req: Request, res: Response) => {
-  const { id } = req.params;
+router.get("/:rankId", async (req: Request, res: Response) => {
   try {
+    const { rankId } = req.params;
     const result = await pool.query(
-      "SELECT * FROM connection_requests WHERE request_id = $1",
-      [id]
+      "SELECT * FROM user_ranks WHERE rank_id = $1",
+      [rankId]
     );
-    res.json(result.rows[0]);
+    res.json(result.rows);
   } catch (error) {
     logger.error(error);
     res.status(500).send("Internal Server Error");

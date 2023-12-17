@@ -6,8 +6,9 @@
  */
 
 import express, { Request, Response } from "express";
-import logger from "../utilities/logger";
+import logger from "../utils/logger";
 import pool from "../database/index";
+import { paginationIsValid } from "../utils";
 
 const router = express.Router();
 
@@ -108,12 +109,7 @@ router.get("/:user_id", async (req: Request, res: Response) => {
     const { page = 1, pageSize = 10 } = req.query;
 
     // Validate page and pageSize parameters
-    if (
-      isNaN(Number(page)) ||
-      isNaN(Number(pageSize)) ||
-      Number(page) <= 0 ||
-      Number(pageSize) <= 0
-    ) {
+    if (!paginationIsValid(page as number, pageSize as number)) {
       return res
         .status(400)
         .json({ error: "Invalid page or pageSize parameters" });
